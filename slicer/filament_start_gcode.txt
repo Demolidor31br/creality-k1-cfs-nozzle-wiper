@@ -1,0 +1,8 @@
+; ====================================================================================
+; OrcaSlicer / Creality Print - Filament Start G-code
+; Inserir nas configuracoes de cada filamento (Filament Settings -> Filament Start G-code)
+; ====================================================================================
+
+; 1. Aciona a macro calibrada de limpeza no fim da troca de filamento
+; Passando a temperatura alvo do filamento ativo para cancelar os 250C da purga nativa:
+CFS_SAFE_WIPE TARGET_TEMP=[nozzle_temperature]

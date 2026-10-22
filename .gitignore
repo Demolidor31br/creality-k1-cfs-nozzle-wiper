@@ -1,0 +1,11 @@
+# Windows thumbnail cache & desktop.ini
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+desktop.ini
+
+# Temporary files
+*.tmp
+*.bak
+*~
+.DS_Store
