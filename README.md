@@ -82,7 +82,7 @@ gcode:
 
   ; 3. Restaura temperatura de impressao (sai dos 250C da purga)
   {% set target_temp = params.TARGET_TEMP|default(232.0)|float %}
-  {% if target_temp > 150.0 %}
+  {% if target_temp > 150.0 and printer.extruder.target > 0 %}
     M104 S{target_temp}
   {% endif %}
 
@@ -153,15 +153,60 @@ Isso garante que ao final da purga nativa (que roda a 250 °C), o bico retorne i
 
 ---
 
-## 🧪 Teste a Seco
+## 🧪 Teste a Seco (Macro Didática)
 
-Para testar a cinemática, o alinhamento da escova e a nova saída lateral pela direita sem precisar imprimir, execute no console do Klipper:
+Para testar a cinemática, o alinhamento da escova e a saída lateral pela direita a frio (sem aquecer o bico e sem risco), adicione e execute a macro `TESTE_LIMPEZA_BICO`:
 
 ```gcode
-TESTE_LIMPEZA_BICO
+[gcode_macro TESTE_LIMPEZA_BICO]
+description: Teste visual a seco do movimento de limpeza na escovinha do CFS (v2.0: mesa em Z60, 36 passadas e saida lateral direita)
+gcode:
+  ; 1. Garante o Home dos eixos antes de qualquer movimento
+  IF_NEED_HOME
+  G90
+  
+  ; 2. SEGURANCA: Abaixa a mesa para Z=60mm suavemente (F1200) para dar visao desimpedida
+  G1 Z60 F1200
+  M400
+
+  ; 3. Posiciona no buraco da purga (simula o bico saindo do bueiro)
+  G1 X148 Y226.5 F4000
+  G4 P1500 ; Pausa de 1.5s para inspecao visual
+
+  ; 4. Avanca a cabeca para a frente em Y215 (campo aberto e seguro)
+  G1 Y215 F4000
+  G4 P500
+
+  ; 5. Desloca para X168 (alinhado no centro dos pinos de silicone)
+  G1 X168 F4000
+  G4 P500
+
+  ; 6. Engata suavemente na escova (Y226.3 aciona a rampa mecanica e eleva os pinos)
+  G1 Y226.3 F2500
+  G4 P500
+
+  ; 7. Escovacao profunda: 18 ciclos completos (36 passadas de 8mm a 60 mm/s)
+  {% for wipe in range(18) %}
+    G1 X164.0 F3600
+    G1 X172.0 F3600
+  {% endfor %}
+  M400
+
+  ; 8. SAIDA PELA DIREITA: Varre ate o canto direito (X180) tosquiando qualquer fiapo
+  G1 X180.0 F4800
+  G4 P800 ; Pausa no ponto de tosa
+
+  ; 9. Desengata para a frente para a zona de seguranca (Y215)
+  G1 Y215 F4000
+  M400
+
+  ; 10. Volta ao centro da mesa
+  G1 X110 Y110 F6000
+  M400
+  {action_respond_info("--> Teste de limpeza v2.0 finalizado com 100% de sucesso!")}
 ```
 
-A cabeça irá simular o fim da purga, descer a mesa para Z=60mm com segurança, realizar as 36 passadas na escova, sair lateralmente por X180 e retornar ao centro da mesa.
+A macro conta com **pausas visuais programadas** para que você possa acompanhar cada etapa (buraco de purga, alinhamento, engate, escovação e tosa lateral) com os olhos e 100% a frio.
 
 ---
 
