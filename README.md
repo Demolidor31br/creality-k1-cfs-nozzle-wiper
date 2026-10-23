@@ -1,4 +1,4 @@
-# 🧹 Creality K1 / K1C / K1 Max - CFS Safe Nozzle Wiper
+# 🧹 Creality K1 / K1C / K1 Max - CFS Safe Nozzle Wiper (v2.0)
 
 [![Klipper](https://img.shields.io/badge/Klipper-Compatible-orange.svg)](https://www.klipper3d.org/)
 [![OrcaSlicer](https://img.shields.io/badge/OrcaSlicer-Calibrated-blue.svg)](https://github.com/SoftFever/OrcaSlicer)
@@ -8,7 +8,7 @@
 
 Rotina calibrada de **limpeza mecânica de bico com escova de silicone** para impressoras **Creality K1, K1C e K1 Max** equipadas com o sistema multi-cor **CFS (Creality Filament System)**.
 
-Desenvolvido para eliminar o gotejamento de plástico pós-purga, evitar contaminação de cores e prevenir colisões da mesa contra o mecanismo da escova.
+A **versão 2.0** traz retração ampliada anti-gotejamento (2.0 mm), ciclo triplo de escovação (36 passadas) e saída lateral pela direita para tosar e soltar qualquer filamento que tente aderir à meia de silicone do hotend.
 
 ---
 
@@ -25,27 +25,32 @@ Assista ao ciclo completo em funcionamento na máquina:
 
 ---
 
-## 🎯 Problemas Resolvidos por Este Mod
+## 🎯 Problemas Resolvidos por Este Mod (v2.0)
 
-1. **Gotejamento & Fiapos Pós-Purga:** Após a purga no bueiro traseiro, o bico fica pressurizado a 250 °C, escorrendo filamento que suja a escova e a peça.
-   - *Solução:* Retração imediata de **`1.0 mm` a 1800 mm/min (`G1 E-1.0 F1800`)** e restauração instantânea da temperatura de impressão (`M104 S[target_temp]`).
-2. **Risco de Colisão do Eixo Z:** Quando a peça está nas primeiras camadas (`Z < 30 mm`), a mesa levantada pode colidir com o mecanismo móvel da escova de silicone ao acionar a rampa mecânica.
+1. **Gotejamento & Fiapos Pós-Purga:** O bico purga a 250 °C e fica pressurizado. Com retração insuficiente, o filamento fundido (especialmente PETG) escorre lentamente na viagem e gruda na meia de silicone.
+   - *Solução v2.0:* Retração ampliada de **`2.0 mm` a 1800 mm/min (`G1 E-2.0 F1800`)**, quebrando a tensão superficial e o vácuo interno, acompanhado de restauração imediata da temperatura de impressão (`M104 S[target_temp]`).
+2. **Filamento Preso na Meia de Silicone:** Sair direto para frente (`Y215`) após a limpeza arrastava qualquer fiapo restante contra a borda frontal da borracha.
+   - *Solução v2.0:* **Saída lateral pela direita (`X=180.0`)** antes de recuar. A cabeça varre toda a quina final das cerdas e a borda metálica do suporte, agindo como uma lâmina que corta e desprende o plástico para o duto antes de ir para a frente em campo aberto.
+3. **Escovação Insuficiente em Filamentos Grudentos (PETG):**
+   - *Solução v2.0:* **Ciclo Triplo de Escovação** — 18 ciclos completos (**36 passadas**) com curso ampliado de **8 mm (`X=164.0` a `X=172.0`)**, limpando tanto a ponta cônica quanto as quinas da meia de silicone.
+4. **Risco de Colisão do Eixo Z:** Quando a peça está nas primeiras camadas (`Z < 30 mm`), a mesa levantada pode colidir com o mecanismo móvel da escova de silicone ao acionar a rampa mecânica.
    - *Solução:* **Salvaguarda inteligente de Z suave** — rebaixa a mesa para `Z=30 mm` a suaves `10 mm/s` (`F600`) em campo aberto (`Y=215`), realiza a limpeza e retorna com precisão para a camada exata.
-3. **Looping de Corte do CFS (Extrusora Nova):** Em extrusoras novas com molas mais rígidas, o microswitch de corte `PA8` muitas vezes falha no acionamento, travando o firmware em repetições infinitas de corte.
+5. **Looping de Corte do CFS (Extrusora Nova):** Em extrusoras novas com molas mais rígidas, o microswitch de corte `PA8` muitas vezes falha no acionamento, travando o firmware em repetições infinitas de corte.
    - *Solução:* Calibração do offset de corte para **`cut_pos_offset = 1.8`** (+0.5 mm).
 
 ---
 
-## ⚙️ Parâmetros Calibrados
+## ⚙️ Parâmetros Calibrados (v2.0)
 
 | Parâmetro | Valor Calibrado | Finalidade |
 | :--- | :---: | :--- |
 | **Zona Segura Frontal** | `Y = 215.0 mm` | Campo aberto para descida e subida do eixo Z |
 | **Centro dos Pinos de Silicone** | `X = 168.0 mm` | Ponto de alinhamento central da escova |
 | **Engate Traseiro da Rampa** | `Y = 226.3 mm` | Pressiona a rampa e ergue a escova contra o bico |
-| **Amplitude de Esfregada** | `X = 165.0` a `171.0` | Curso lateral de 6 mm sobre as cerdas de silicone |
-| **Ciclos de Limpeza** | `6 ciclos (12 passadas)` | Velocidade de 60 mm/s (`F3600`) |
-| **Retração Anti-Gotejamento** | `1.0 mm` a 30 mm/s | Despressuriza o bico antes da escovação |
+| **Amplitude de Esfregada** | `X = 164.0` a `172.0` | Curso ampliado de 8 mm cobrindo bico e meia de silicone |
+| **Ciclos de Limpeza** | `18 ciclos (36 passadas)` | Velocidade de 60 mm/s (`F3600`) com atrito mecânico triplicado |
+| **Saída Lateral Direita** | `X = 180.0 mm` | Tosquia e desgarra qualquer resíduo antes de avançar para frente |
+| **Retração Anti-Gotejamento** | `2.0 mm` a 30 mm/s | Despressuriza completamente a câmara térmica do bico |
 | **Velocidade de Salvaguarda Z** | `10 mm/s (F600)` | Movimento suave sem trancos ou perda de passos |
 | **Offset da Alavanca de Corte** | `cut_pos_offset = 1.8` | Acionamento firme do sensor de corte na nova extrusora |
 
@@ -59,29 +64,29 @@ Abra o arquivo `box.cfg` pelo painel web do Fluidd / Mainsail / CrealityOS e adi
 
 ```gcode
 [gcode_macro CFS_SAFE_WIPE]
-description: Limpeza calibrada nos pinos de silicone do CFS com salvaguarda de Z
+description: Limpeza profunda nos pinos de silicone do CFS (v2: retracao 2mm, 36 passadas e saida lateral direita)
 gcode:
   G90
   M400
   
-  ; 1. Salva a altura Z real da peca
+  ; 1. Salva a altura Z real da peca sendo impressa
   {% set orig_z = printer.toolhead.position.z|float %}
 
-  ; 2. Retracao rapida de 1.0mm anti-gotejamento
+  ; 2. Retracao rapida de 2.0mm anti-gotejamento
   {% if printer.extruder.can_extrude|lower == 'true' %}
     G91
-    G1 E-1.0 F1800
+    G1 E-2.0 F1800
     G90
     M400
   {% endif %}
 
-  ; 3. Restaura a temperatura de impressao (cancela os 250C da purga)
+  ; 3. Restaura temperatura de impressao (sai dos 250C da purga)
   {% set target_temp = params.TARGET_TEMP|default(232.0)|float %}
   {% if target_temp > 150.0 %}
     M104 S{target_temp}
   {% endif %}
 
-  ; 4. Avanca para a zona segura
+  ; 4. Avanca a cabeca para frente em Y215 (zona segura)
   G1 Y215 F6000
   M400
 
@@ -91,7 +96,7 @@ gcode:
     M400
   {% endif %}
 
-  ; 6. Alinha com o centro da escova
+  ; 6. Centraliza no centro dos pinos de silicone
   G1 X168 F6000
   M400
 
@@ -99,27 +104,22 @@ gcode:
   G1 Y226.3 F3000
   M400
 
-  ; 8. 6 ciclos (12 passadas) de 6mm a 60 mm/s
-  G1 X165.0 F3600
-  G1 X171.0 F3600
-  G1 X165.0 F3600
-  G1 X171.0 F3600
-  G1 X165.0 F3600
-  G1 X171.0 F3600
-  G1 X165.0 F3600
-  G1 X171.0 F3600
-  G1 X165.0 F3600
-  G1 X171.0 F3600
-  G1 X165.0 F3600
-  G1 X171.0 F3600
-  G1 X168.0 F3600
+  ; 8. Escovacao profunda: 18 ciclos (36 passadas ampliadas de 8mm a 60 mm/s)
+  {% for wipe in range(18) %}
+    G1 X164.0 F3600
+    G1 X172.0 F3600
+  {% endfor %}
   M400
 
-  ; 9. Desengata para a frente
+  ; 9. Saida lateral pela direita tosquiando o filamento da meia de silicone
+  G1 X180.0 F4800
+  M400
+
+  ; 10. Desengata para a frente para a zona de seguranca
   G1 Y215 F6000
   M400
 
-  ; 10. Restaura Z para a camada exata a 10 mm/s
+  ; 11. Restaura Z para a camada exata a 10 mm/s
   {% if orig_z < 30.0 %}
     G1 Z{orig_z} F600
     M400
@@ -136,7 +136,7 @@ gcode:
   # ... rotina padrao de purga ...
   BOX_EXTRUDE_MATERIAL
   BOX_EXTRUDER_EXTRUDE
-  ; --- CHAMA LIMPEZA CALIBRADA ---
+  ; --- CHAMA LIMPEZA CALIBRADA V2 ---
   CFS_SAFE_WIPE
   RESTORE_POSITION
 ```
@@ -155,13 +155,13 @@ Isso garante que ao final da purga nativa (que roda a 250 °C), o bico retorne i
 
 ## 🧪 Teste a Seco
 
-Para testar a cinemática e o alinhamento da escova sem precisar imprimir, execute no console do Klipper:
+Para testar a cinemática, o alinhamento da escova e a nova saída lateral pela direita sem precisar imprimir, execute no console do Klipper:
 
 ```gcode
 TESTE_LIMPEZA_BICO
 ```
 
-A cabeça irá simular o fim da purga, descer a mesa para Z=60mm com segurança, realizar as 12 passadas na escova e retornar ao centro da mesa.
+A cabeça irá simular o fim da purga, descer a mesa para Z=60mm com segurança, realizar as 36 passadas na escova, sair lateralmente por X180 e retornar ao centro da mesa.
 
 ---
 
